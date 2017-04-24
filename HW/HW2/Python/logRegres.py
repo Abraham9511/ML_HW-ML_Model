@@ -39,24 +39,33 @@ def stocGradAscent1(dataMatrix, classLabels, numIter=150):
             del(dataIndex[randIndex])
     return weights
 
+def outputWeights(weights, weiPath):
+    with open(weiPath, "w") as f:
+        f.write("id,weight\n");
+        m = shape(weights)[0]
+        for i in range(m):
+            f.write(str(i)+","+str(weights[i])+"\n")
+
 def testOutput(weights, testArr, answer):
-    weights = mat(weights).transpose()
     output = testArr*weights
     m, n = shape(output)
     with open(answer, "w") as f:
         f.write("id,label\n")
         for i in range(m):
-            temp = round(sigmoid(output[i,0]),2)
-            print(temp)
-            f.write(str(i)+","+str(temp)+"\n")
+            prob = round(sigmoid(sum(output[i])),2)
+            #print(output[i])
+            f.write(str(i)+","+str(prob)+"\n")
 
 if __name__ == "__main__":
-    #trainPath
-    #testPath
-    #ansPath
-    dataArr, labelMat = loadDataSet("../data/train_data.txt")
-    weights = stocGradAscent1(array(dataArr), labelMat, 1)
-    #weights=ones(202)
-    testArr, tId = loadDataSet("../data/test_data.txt")
-    testOutput(weights, mat(testArr), "answer.txt")
+    trainPath = "../data/train_data.txt"
+    testPath = "../data/test_data.txt"
+    ansPath = "answer.txt"
+    weiPath = "weights.txt"
+    dataArr, labelMat = loadDataSet(trainPath)
+    weights = stocGradAscent1(array(dataArr), labelMat, 100)
+    outputWeights(weights, weiPath)
+    #weights = ones(202)
+    testArr, tId = loadDataSet(testPath)
+    outputWeights(weights,weiPath)
+    testOutput(weights, array(testArr), ansPath)
 
