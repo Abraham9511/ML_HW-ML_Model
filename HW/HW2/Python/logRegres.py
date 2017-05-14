@@ -55,7 +55,7 @@ if __name__ == "__main__":
     #testPath
     #ansPath
     dataArr, labelMat = loadDataSet("../data/train_data.txt")
-    weights = stocGradAscent1(array(dataArr), labelMat, 1)
+    weights = stocGradAscent1(array(dataArr), labelMat, 40)
     #weights=ones(202)
     testArr, tId = loadDataSet("../data/test_data.txt")
     testOutput(weights, mat(testArr), "answer.txt")
