@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from __future__ import division
-from __futrue__ import print_function
+from __future__ import print_function
 
 import numpy as np
 import tensorflow as tf
@@ -10,7 +10,7 @@ from tensorflow.contrib.learn.python.learn.estimators import model_fn as model_f
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
-def cnn_model_fn(features, labels, model):
+def cnn_model_fn(features, labels, mode):
     #Input Layer
     input_layer = tf.reshape(features, [-1, 28, 28, 1]) # Not Really understand meaning of batch_size
 
@@ -39,21 +39,21 @@ def cnn_model_fn(features, labels, model):
 
     # Dense_Layer
     pool2_flat = tf.reshape(pool2, [-1, 7*7*64])
-    dense = tf.layers.dense(inputs=pool2_flat, untils=1024, activation=tf.nn.relu) # 1024?
+    dense = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu) # 1024?
     dropout = tf.layers.dropout(
-        input = dense, rate = 0.4, trainging=mode == learn.ModeKeys.TRAIN
+        inputs = dense, rate = 0.4, training=mode == learn.ModeKeys.TRAIN
     )
 
     # Logits Layer
-    logitbelss = tf.layers.dense(inputs=dropout, units=10)
+    logits = tf.layers.dense(inputs=dropout, units=10)
 
     loss = None
-    train_ip = None
+    train_op = None
 
     # Calculate Loss(for both TRAIN and EVAL modes)
     if mode != learn.ModeKeys.INFER:
-        onehot_labels = tf.one_hot(indices=tf.cast(labels, tn.int32), depth=10)
-        loss = tf.lossses.softmax_cross_entropy(
+        onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
+        loss = tf.losses.softmax_cross_entropy(
             onehot_labels=onehot_labels, logits = logits
         )
 
@@ -61,7 +61,7 @@ def cnn_model_fn(features, labels, model):
     if mode == learn.ModeKeys.TRAIN:
         train_op = tf.contrib.layers.optimize_loss(
             loss = loss,
-            global_step = tf.contrib.framerwork.get_global_step(),
+            global_step = tf.contrib.framework.get_global_step(),
             learning_rate = 0.001,
             optimizer = "SGD"
         )
@@ -76,7 +76,7 @@ def cnn_model_fn(features, labels, model):
 
     # Return a ModelFnOps object
     return model_fn_lib.ModelFnOps(
-        mode=model, predictions=predictions, loss = loss, train_op= train_op
+        mode=mode, predictions=predictions, loss = loss, train_op= train_op
     )
 
 def main(unused_argv):
@@ -99,7 +99,7 @@ def main(unused_argv):
         x = train_data,
         y = train_labels,
         batch_size=100,
-        step=20000,
+        steps=20000,
         monitors=[logging_hook]
     )
     # Configure the accuraccy metric for evaluation
@@ -109,8 +109,7 @@ def main(unused_argv):
             metric_fn=tf.metrics.accuracy, prediction_key="classes"),
     }
     eval_results = mnist_classifier.evaluate(
-        x=eval_data, y=eval_labels, metrics=metrics
-    )
+        x=eval_data, y=eval_labels, metrics=metrics)
     print(eval_results)
 
 if __name__ == "__main__":
