@@ -12,7 +12,7 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 def cnn_model_fn(features, labels, model):
     #Input Layer
-    input_layer = tf.reshape(features, [-1, 28, 28, 1])
+    input_layer = tf.reshape(features, [-1, 28, 28, 1]) # Not Really understand meaning of batch_size
 
     # Convolutional Layer #1
     conv1 = tf.layers.conv2d(
@@ -39,13 +39,13 @@ def cnn_model_fn(features, labels, model):
 
     # Dense_Layer
     pool2_flat = tf.reshape(pool2, [-1, 7*7*64])
-    dense = tf.layers.dense(inputs=pool2_flat, untils=1024, activation=tf.nn.relu)
+    dense = tf.layers.dense(inputs=pool2_flat, untils=1024, activation=tf.nn.relu) # 1024?
     dropout = tf.layers.dropout(
         input = dense, rate = 0.4, trainging=mode == learn.ModeKeys.TRAIN
     )
 
     # Logits Layer
-    logits = tf.layers.dense(inputs=dropout, units=10)
+    logitbelss = tf.layers.dense(inputs=dropout, units=10)
 
     loss = None
     train_ip = None
@@ -70,7 +70,48 @@ def cnn_model_fn(features, labels, model):
     predictions = {
         "classes": tf.argmax(
             input=logits, axis = 1),
-        "probabilities"
+        "probabilities": tf.nn.softmax(
+            logits, name="softmax_tensor")
     }
+
+    # Return a ModelFnOps object
+    return model_fn_lib.ModelFnOps(
+        mode=model, predictions=predictions, loss = loss, train_op= train_op
+    )
+
+def main(unused_argv):
+    # Load traing and eval data
+    mnist = learn.datasets.load_dataset("mnist")
+    train_data = mnist.train.images
+    train_labels = np.asanyarray(mnist.train.labels, dtype=np.int32)
+    eval_data = mnist.test.images
+    eval_labels = np.asanyarray(mnist.test.labels, dtype=np.int32)
+    mnist_classifier = learn.Estimator(
+        cnn_model_fn, model_dir = "/tmp/mnist_convnet_model"
+    )
+    # Set up logging for predictions
+    tensors_to_log = {"probabilities": "softmax_tensor"}
+    logging_hook = tf.train.LoggingTensorHook(
+        tensors = tensors_to_log, every_n_iter = 50
+    )
+    #Train the model
+    mnist_classifier.fit(
+        x = train_data,
+        y = train_labels,
+        batch_size=100,
+        step=20000,
+        monitors=[logging_hook]
+    )
+    # Configure the accuraccy metric for evaluation
+    metrics = {
+        "accuracy":
+        learn.MetricsSpec(
+            metric_fn=tf.metrics.accuracy, prediction_key="classes"),
+    }
+    eval_results = mnist_classifier.evaluate(
+        x=eval_data, y=eval_labels, metrics=metrics
+    )
+    print(eval_results)
+
 if __name__ == "__main__":
     tf.app.run()
