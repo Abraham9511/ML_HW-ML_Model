@@ -56,3 +56,4 @@ class TestData:
             for i in test_reference:
                 row = [str(index), str(i[0])]
                 f_csv.writerow(row)
+                index = index+1
