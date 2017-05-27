@@ -48,11 +48,11 @@ class TestData:
     def get_value(self):
         return self.value
 
-    def output(self):
+    def output(self, test_reference):
         with open(self.submission_filename, 'w') as f:
             f_csv = csv.writer(f)
             f_csv.writerow(['Id', 'reference'])
             index = 0
-            for i in self.reference:
+            for i in test_reference:
                 row = [str(index), str(i[0])]
                 f_csv.writerow(row)
