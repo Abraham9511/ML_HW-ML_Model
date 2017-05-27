@@ -24,7 +24,7 @@ def train(trainData, testData):
         test_reference[l_index, 0] = m_reference
         l_index = l_index+1
         print("Compute label "+ str(l_index) + ", reference is "+ str(m_reference))
-    testData.output()
+    testData.output(test_reference)
 
 if __name__ == '__main__':
     trainData = read_data.TrainData(train_filename)
