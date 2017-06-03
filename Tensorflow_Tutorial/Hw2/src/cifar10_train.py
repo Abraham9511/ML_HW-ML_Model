@@ -58,8 +58,9 @@ tf.app.flags.DEFINE_integer('log_frequency', 10,
 
 def train():
   """Train CIFAR-10 for a number of steps."""
+  # 用context manager声明了一个默认的Graph
   with tf.Graph().as_default():
-    global_step = tf.contrib.framework.get_or_create_global_step()
+    global_step = tf.contrib.framework.get_or_create_global_step() 
 
     # Get images and labels for CIFAR-10.
     images, labels = cifar10.distorted_inputs()
@@ -113,11 +114,11 @@ def train():
 
 
 def main(argv=None):  # pylint: disable=unused-argument
-  cifar10.maybe_download_and_extract()
-  if tf.gfile.Exists(FLAGS.train_dir):
+  cifar10.maybe_download_and_extract() # 下载或者直接解压已经存在的压缩包到指定目录 
+  if tf.gfile.Exists(FLAGS.train_dir): # 判断train_dir是都存在，否则删除
     tf.gfile.DeleteRecursively(FLAGS.train_dir)
-  tf.gfile.MakeDirs(FLAGS.train_dir)
-  train()
+  tf.gfile.MakeDirs(FLAGS.train_dir) # 创建train_dir用于存储训练模型以及相关数据
+  train() # 训练
 
 
 if __name__ == '__main__':

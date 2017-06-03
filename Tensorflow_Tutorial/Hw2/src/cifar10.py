@@ -154,6 +154,7 @@ def distorted_inputs():
   data_dir = os.path.join(FLAGS.data_dir, 'cifar-10-batches-bin')
   images, labels = cifar10_input.distorted_inputs(data_dir=data_dir,
                                                   batch_size=FLAGS.batch_size)
+  # 此处判断是否降低降低数据的精度，可能是为了更快的计算
   if FLAGS.use_fp16:
     images = tf.cast(images, tf.float16)
     labels = tf.cast(labels, tf.float16)
@@ -380,11 +381,13 @@ def train(total_loss, global_step):
 
 def maybe_download_and_extract():
   """Download and extract the tarball from Alex's website."""
+  # 创建存储数据的文件夹
   dest_directory = FLAGS.data_dir
   if not os.path.exists(dest_directory):
     os.makedirs(dest_directory)
   filename = DATA_URL.split('/')[-1]
   filepath = os.path.join(dest_directory, filename)
+  # 判断文件是否存在，若无，从给定地址下载
   if not os.path.exists(filepath):
     def _progress(count, block_size, total_size):
       sys.stdout.write('\r>> Downloading %s %.1f%%' % (filename,
@@ -395,5 +398,6 @@ def maybe_download_and_extract():
     statinfo = os.stat(filepath)
     print('Successfully downloaded', filename, statinfo.st_size, 'bytes.')
   extracted_dir_path = os.path.join(dest_directory, 'cifar-10-batches-bin')
+  # 解压压缩包到dest_direcotry
   if not os.path.exists(extracted_dir_path):
     tarfile.open(filepath, 'r:gz').extractall(dest_directory)

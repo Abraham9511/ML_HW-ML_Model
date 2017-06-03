@@ -2,3 +2,4 @@
 test_data.txt
 train_data.txt
 *.gz
+*.pyc

@@ -56,7 +56,7 @@ def read_cifar10(filename_queue):
       label: an int32 Tensor with the label in the range 0..9.
       uint8image: a [height, width, depth] uint8 Tensor with the image data
   """
-
+  # 类似于声明一个全新的类
   class CIFAR10Record(object):
     pass
   result = CIFAR10Record()
@@ -64,6 +64,7 @@ def read_cifar10(filename_queue):
   # Dimensions of the images in the CIFAR-10 dataset.
   # See http://www.cs.toronto.edu/~kriz/cifar.html for a description of the
   # input format.
+  # CIFAT-10 二进制存储方式是顺序的放1+32*32+32*32+32*32个字节，第一个是label
   label_bytes = 1  # 2 for CIFAR-100
   result.height = 32
   result.width = 32
@@ -158,6 +159,7 @@ def distorted_inputs(data_dir, batch_size):
   filename_queue = tf.train.string_input_producer(filenames)
 
   # Read examples from files in the filename queue.
+  # 该函数涉及处理底层的数据转换为需求的tensor
   read_input = read_cifar10(filename_queue)
   reshaped_image = tf.cast(read_input.uint8image, tf.float32)
 
@@ -166,7 +168,7 @@ def distorted_inputs(data_dir, batch_size):
 
   # Image processing for training the network. Note the many random
   # distortions applied to the image.
-
+  # 随机对照片进行曲解，我认为这是为了提高泛化能力的做法
   # Randomly crop a [height, width] section of the image.
   distorted_image = tf.random_crop(reshaped_image, [height, width, 3])
 
