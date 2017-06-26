@@ -1,0 +1,1 @@
+1. http://rishy.github.io/ml/2017/01/05/how-to-train-your-dnn/
