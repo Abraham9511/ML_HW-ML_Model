@@ -3,3 +3,4 @@
 *.txt
 *.csv
 /Tensorflow_Tutorial/JustAProject/data/*
+.DS_Store
