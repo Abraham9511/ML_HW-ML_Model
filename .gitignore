@@ -1,6 +1,6 @@
-*.gz
 *.pyc
 *.txt
 *.csv
+/Tensorflow_Tutorial/BuildConvNet/MNIST-data/*
 /Tensorflow_Tutorial/JustAProject/data/*
 .DS_Store
